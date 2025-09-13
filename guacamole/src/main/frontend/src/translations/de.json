@@ -59,6 +59,7 @@
     "CLIENT" : {
 
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ADD_MONITOR"               : "Fügen Sie einen zusätzlichen Bildschirm hinzu",
         "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
         "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Entferne abgeschlossene Übertragungen",
@@ -151,6 +152,7 @@
         "SECTION_HEADER_INPUT_METHOD"    : "Eingabemethode",
 
         "SECTION_HEADER_MOUSE_MODE"     : "Mausemulationsmodus",
+        "SECTION_HEADER_MULTI_MONITOR"  : "Mehrere Monitore",
 
         "TEXT_ANONYMOUS_USER_JOINED"      : "Ein unbekannter Benutzer ist der Verbindung beigetreten.",
         "TEXT_ANONYMOUS_USER_LEFT"        : "Ein unbekannter Benutzer hat die Verbindung verlassen.",
@@ -692,6 +694,7 @@
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
         "SECTION_HEADER_RECORDING"          : "Bildschirmaufzeichnung",
         "SECTION_HEADER_REMOTEAPP"          : "Entferntes Programm",
+        "FIELD_HEADER_SECONDARY_MONITORS"   : "Maximale Anzahl an Monitoren (benötigt Display-Update):",
         "SECTION_HEADER_SFTP"               : "SFTP",
         "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
 
