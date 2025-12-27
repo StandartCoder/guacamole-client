@@ -53,6 +53,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     const guacHistory             = $injector.get('guacHistory');
     const guacImage               = $injector.get('guacImage');
     const guacVideo               = $injector.get('guacVideo');
+    const guacWebcam              = $injector.get('guacWebcam');
 
     /**
      * The minimum amount of time to wait between updates to the client
@@ -539,6 +540,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                     case Guacamole.Client.State.DISCONNECTING:
                     case Guacamole.Client.State.DISCONNECTED:
                         ManagedClient.updateThumbnail(managedClient);
+
+                        // Clean up camera redirection on disconnect
+                        if (clientState === Guacamole.Client.State.DISCONNECTED) {
+                            guacWebcam.stopCamera(client);
+                        }
                         break;
 
                 }
@@ -625,6 +631,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             }
         };
 
+        /**
+         * Stops camera recording when server sends camera-stop signal.
+         * This is called when Windows sends Stop Streams Request.
+         */
+        function stopCamera() {
+            // Stop camera via guacWebcam service
+            guacWebcam.stopCamera(client);
+        }
+
         // Test for argument mutability whenever an argument value is
         // received
         client.onargv = function clientArgumentValueReceived(stream, mimetype, name) {
@@ -642,13 +657,52 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 value += text;
             };
 
-            // Test mutability once stream is finished, storing the current
-            // value for the argument only if it is mutable
-            reader.onend = function textComplete() {
-                ManagedArgument.getInstance(managedClient, name, value).then(function argumentIsMutable(argument) {
-                    managedClient.arguments[name] = argument;
-                }, function ignoreImmutableArguments() {});
-            };
+            // Handle camera parameter reception (protocol-driven camera start)
+            // Prefer the single JSON argv path and ignore legacy per-parameter values.
+            if (name.indexOf('camera-') === 0) {
+                reader.onend = function cameraParameterReceived() {
+                    // Handle camera-stop signal (no parameters)
+                    if (name === 'camera-stop') {
+                        stopCamera();
+                        return;
+                    }
+
+
+
+                    // Alternative concise form: "WIDTHxHEIGHT@FPS_NUM/FPS_DEN#STREAM_INDEX"
+                    if (name === 'camera-start') {
+                        try {
+                            var m = /^\s*(\d+)x(\d+)@(\d+)\/(\d+)(?:#(\d+)(?:#([^\s]*))?)?\s*$/.exec(value || '');
+                            if (!m) {
+                                return;
+                            }
+
+                            guacRDPECAM.startCameraWithParams(client, {
+                                width: parseInt(m[1]),
+                                height: parseInt(m[2]),
+                                fpsNum: parseInt(m[3]),
+                                fpsDenom: parseInt(m[4]) || 1,
+                                streamIndex: m[5] ? parseInt(m[5]) : 0,
+                                deviceId: m[6] ? m[6].toString() : undefined
+                            });
+                        } catch (e) {
+                            // Failed to parse camera-start string - ignore
+                        }
+                        return;
+                    }
+                    return;
+                };
+            }
+            // Handle normal arguments (non-camera parameters)
+            else {
+                // Test mutability once stream is finished, storing the current
+                // value for the argument only if it is mutable
+                reader.onend = function textComplete() {
+                    ManagedArgument.getInstance(managedClient, name, value).then(function argumentIsMutable(argument) {
+                        managedClient.arguments[name] = argument;
+                    }, function ignoreImmutableArguments() {});
+                };
+            }
 
         };
 
