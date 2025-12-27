@@ -677,7 +677,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                                 return;
                             }
 
-                            guacRDPECAM.startCameraWithParams(client, {
+                            guacWebcam.startCameraWithParams(client, {
                                 width: parseInt(m[1]),
                                 height: parseInt(m[2]),
                                 fpsNum: parseInt(m[3]),
