@@ -229,6 +229,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "enable-rdpcam",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "enable-printing",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
