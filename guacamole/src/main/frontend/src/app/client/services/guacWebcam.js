@@ -627,9 +627,8 @@ angular.module('client').factory('guacWebcam', ['$injector', function guacWebcam
                             deviceIdsChanged = true;
                         }
                     });
-                })
-                
-                // Check for removed devices
+
+                    // Check for removed devices
                 Object.keys(cameraRegistry).forEach(function(deviceId) {
                     if (!newRegistry.hasOwnProperty(deviceId)) {
                         deviceIdsChanged = true;
@@ -658,6 +657,12 @@ angular.module('client').factory('guacWebcam', ['$injector', function guacWebcam
                 cameraRegistry = {};
                 notifyRegistryChange();
             });
+        }).catch(function(error) {
+            // Error enumerating devices - log error and clear registry
+            console.error('Error enumerating media devices:', error);
+            cameraRegistry = {};
+            notifyRegistryChange();
+        });
     }
 
     /**
