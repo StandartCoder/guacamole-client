@@ -162,7 +162,23 @@ angular.module('settings').provider('preferenceService', ['$injector',
          * 
          * @type String
          */
-        timezone : getDetectedTimezone()
+        timezone : getDetectedTimezone(),
+
+        /**
+         * Array of enabled camera device IDs for RDP camera redirection.
+         * Empty array means no cameras are enabled by default (user must opt-in).
+         *
+         * @type {Array.<String>}
+         */
+        rdpcamEnabledDevices : [],
+
+        /**
+         * Video delay in milliseconds for RDP camera redirection (0-1000).
+         * Used to synchronize video and audio during calls.
+         *
+         * @type {Number}
+         */
+        rdpcamVideoDelay : 0
 
     };
 
