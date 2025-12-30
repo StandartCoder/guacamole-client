@@ -87,6 +87,18 @@ angular.module('client').factory('guacWebcam', ['$injector', function guacWebcam
 
     // Always use a local, stable ID for each Guacamole.Client
     const clientIds = new WeakMap();
+
+    /**
+     * Gets or creates a stable local ID for a Guacamole client.
+     *
+     * @param {Guacamole.Client} client
+     *     The Guacamole client to get an ID for.
+     *
+     * @returns {string|null}
+     *     A unique local ID for the client, or null if client is null.
+     *
+     * @private
+     */
     function getLocalClientId(client) {
         if (!client)
             return null;
@@ -98,6 +110,20 @@ angular.module('client').factory('guacWebcam', ['$injector', function guacWebcam
         return id;
     }
 
+    /**
+     * Checks if a capability supports a given value.
+     *
+     * @param {Object|Array|undefined} capability
+     *     The capability object, array, or undefined.
+     *
+     * @param {*} value
+     *     The value to check against the capability.
+     *
+     * @returns {boolean}
+     *     True if the capability supports the value, false otherwise.
+     *
+     * @private
+     */
     function capabilitySupportsValue(capability, value) {
         if (!capability)
             return true;
@@ -258,6 +284,17 @@ angular.module('client').factory('guacWebcam', ['$injector', function guacWebcam
         }
     }
 
+    /**
+     * Derives video format list from MediaTrackCapabilities object.
+     *
+     * @param {MediaTrackCapabilities} capabilities
+     *     The MediaTrackCapabilities object from getCapabilities().
+     *
+     * @returns {Array.<Object>}
+     *     Array of format objects with width, height, fpsNumerator, fpsDenominator.
+     *
+     * @private
+     */
     function deriveFormatsFromCapabilities(capabilities) {
         const formats = [];
         const seen = {};
@@ -495,7 +532,10 @@ angular.module('client').factory('guacWebcam', ['$injector', function guacWebcam
                 notifyRegistryChange();
 
             }).catch(function(error) {
-                // Error probing device capabilities - capabilities not sent
+                // Error probing device capabilities - log error and clear registry
+                console.error('Error probing camera capabilities:', error);
+                cameraRegistry = {};
+                notifyRegistryChange();
             });
     }
 
